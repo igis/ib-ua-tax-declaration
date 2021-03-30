@@ -18,13 +18,13 @@ import java.util.stream.Collectors;
 
 public class App {
 
-    @Parameter(names={"--flex-report", "-f"})
+    @Parameter(names={"--flex-report", "-f"}, required = true)
     private List<String> flexReportFiles;
 
-    @Parameter(names={"--params", "-p"})
+    @Parameter(names={"--params", "-p"}, required = true)
     private String paramsFile;
 
-    @Parameter(names={"--output-dir", "-o"})
+    @Parameter(names={"--output-dir", "-o"}, required = true)
     private String outputDir;
 
     public static void main(String... args) throws Exception {
