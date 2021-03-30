@@ -1,0 +1,253 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="Trade">
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base="xs:string">
+                    <xs:attribute type="xs:string" name="accountId" use="optional"/>
+                    <xs:attribute type="xs:string" name="acctAlias" use="optional"/>
+                    <xs:attribute type="xs:string" name="model" use="optional"/>
+                    <xs:attribute type="xs:string" name="currency" use="optional"/>
+                    <xs:attribute type="xs:float" name="fxRateToBase" use="optional"/>
+                    <xs:attribute type="xs:string" name="assetCategory" use="optional"/>
+                    <xs:attribute type="xs:string" name="symbol" use="optional"/>
+                    <xs:attribute type="xs:string" name="description" use="optional"/>
+                    <xs:attribute type="xs:int" name="conid" use="optional"/>
+                    <xs:attribute type="xs:string" name="securityID" use="optional"/>
+                    <xs:attribute type="xs:string" name="securityIDType" use="optional"/>
+                    <xs:attribute type="xs:string" name="cusip" use="optional"/>
+                    <xs:attribute type="xs:string" name="isin" use="optional"/>
+                    <xs:attribute type="xs:string" name="listingExchange" use="optional"/>
+                    <xs:attribute type="xs:string" name="underlyingConid" use="optional"/>
+                    <xs:attribute type="xs:string" name="underlyingSymbol" use="optional"/>
+                    <xs:attribute type="xs:string" name="underlyingSecurityID" use="optional"/>
+                    <xs:attribute type="xs:string" name="underlyingListingExchange" use="optional"/>
+                    <xs:attribute type="xs:string" name="issuer" use="optional"/>
+                    <xs:attribute type="xs:float" name="multiplier" use="optional"/>
+                    <xs:attribute type="xs:string" name="strike" use="optional"/>
+                    <xs:attribute type="xs:string" name="expiry" use="optional"/>
+                    <xs:attribute type="xs:long" name="tradeID" use="optional"/>
+                    <xs:attribute type="xs:string" name="putCall" use="optional"/>
+                    <xs:attribute type="xs:string" name="reportDate" use="optional"/>
+                    <xs:attribute type="xs:string" name="principalAdjustFactor" use="optional"/>
+                    <xs:attribute type="xs:string" name="dateTime" use="optional"/>
+                    <xs:attribute type="xs:int" name="tradeDate" use="optional"/>
+                    <xs:attribute type="xs:int" name="settleDateTarget" use="optional"/>
+                    <xs:attribute type="xs:string" name="transactionType" use="optional"/>
+                    <xs:attribute type="xs:string" name="exchange" use="optional"/>
+                    <xs:attribute type="xs:int" name="quantity" use="optional"/>
+                    <xs:attribute type="xs:float" name="tradePrice" use="optional"/>
+                    <xs:attribute type="xs:float" name="tradeMoney" use="optional"/>
+                    <xs:attribute type="xs:float" name="proceeds" use="optional"/>
+                    <xs:attribute type="xs:int" name="taxes" use="optional"/>
+                    <xs:attribute type="xs:float" name="ibCommission" use="optional"/>
+                    <xs:attribute type="xs:string" name="ibCommissionCurrency" use="optional"/>
+                    <xs:attribute type="xs:float" name="netCash" use="optional"/>
+                    <xs:attribute type="xs:float" name="closePrice" use="optional"/>
+                    <xs:attribute type="xs:string" name="openCloseIndicator" use="optional"/>
+                    <xs:attribute type="xs:string" name="notes" use="optional"/>
+                    <xs:attribute type="xs:float" name="cost" use="optional"/>
+                    <xs:attribute type="xs:float" name="fifoPnlRealized" use="optional"/>
+                    <xs:attribute type="xs:float" name="fxPnl" use="optional"/>
+                    <xs:attribute type="xs:float" name="mtmPnl" use="optional"/>
+                    <xs:attribute type="xs:float" name="origTradePrice" use="optional"/>
+                    <xs:attribute type="xs:string" name="origTradeDate" use="optional"/>
+                    <xs:attribute type="xs:string" name="origTradeID" use="optional"/>
+                    <xs:attribute type="xs:int" name="origOrderID" use="optional"/>
+                    <xs:attribute type="xs:string" name="clearingFirmID" use="optional"/>
+                    <xs:attribute type="xs:long" name="transactionID" use="optional"/>
+                    <xs:attribute type="xs:string" name="buySell" use="optional"/>
+                    <xs:attribute type="xs:int" name="ibOrderID" use="optional"/>
+                    <xs:attribute type="xs:string" name="ibExecID" use="optional"/>
+                    <xs:attribute type="xs:string" name="brokerageOrderID" use="optional"/>
+                    <xs:attribute type="xs:string" name="orderReference" use="optional"/>
+                    <xs:attribute type="xs:string" name="volatilityOrderLink" use="optional"/>
+                    <xs:attribute type="xs:string" name="exchOrderId" use="optional"/>
+                    <xs:attribute type="xs:string" name="extExecID" use="optional"/>
+                    <xs:attribute type="xs:string" name="orderTime" use="optional"/>
+                    <xs:attribute type="xs:string" name="openDateTime" use="optional"/>
+                    <xs:attribute type="xs:string" name="holdingPeriodDateTime" use="optional"/>
+                    <xs:attribute type="xs:string" name="whenRealized" use="optional"/>
+                    <xs:attribute type="xs:string" name="whenReopened" use="optional"/>
+                    <xs:attribute type="xs:string" name="levelOfDetail" use="optional"/>
+                    <xs:attribute type="xs:float" name="changeInPrice" use="optional"/>
+                    <xs:attribute type="xs:int" name="changeInQuantity" use="optional"/>
+                    <xs:attribute type="xs:string" name="orderType" use="optional"/>
+                    <xs:attribute type="xs:string" name="traderID" use="optional"/>
+                    <xs:attribute type="xs:string" name="isAPIOrder" use="optional"/>
+                    <xs:attribute type="xs:int" name="accruedInt" use="optional"/>
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Lot">
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base="xs:string">
+                    <xs:attribute type="xs:string" name="accountId" use="optional"/>
+                    <xs:attribute type="xs:string" name="acctAlias" use="optional"/>
+                    <xs:attribute type="xs:string" name="model" use="optional"/>
+                    <xs:attribute type="xs:string" name="currency" use="optional"/>
+                    <xs:attribute type="xs:float" name="fxRateToBase" use="optional"/>
+                    <xs:attribute type="xs:string" name="assetCategory" use="optional"/>
+                    <xs:attribute type="xs:string" name="symbol" use="optional"/>
+                    <xs:attribute type="xs:string" name="description" use="optional"/>
+                    <xs:attribute type="xs:int" name="conid" use="optional"/>
+                    <xs:attribute type="xs:string" name="securityID" use="optional"/>
+                    <xs:attribute type="xs:string" name="securityIDType" use="optional"/>
+                    <xs:attribute type="xs:string" name="cusip" use="optional"/>
+                    <xs:attribute type="xs:string" name="isin" use="optional"/>
+                    <xs:attribute type="xs:string" name="listingExchange" use="optional"/>
+                    <xs:attribute type="xs:string" name="underlyingConid" use="optional"/>
+                    <xs:attribute type="xs:string" name="underlyingSymbol" use="optional"/>
+                    <xs:attribute type="xs:string" name="underlyingSecurityID" use="optional"/>
+                    <xs:attribute type="xs:string" name="underlyingListingExchange" use="optional"/>
+                    <xs:attribute type="xs:string" name="issuer" use="optional"/>
+                    <xs:attribute type="xs:float" name="multiplier" use="optional"/>
+                    <xs:attribute type="xs:string" name="strike" use="optional"/>
+                    <xs:attribute type="xs:string" name="expiry" use="optional"/>
+                    <xs:attribute type="xs:string" name="tradeID" use="optional"/>
+                    <xs:attribute type="xs:string" name="putCall" use="optional"/>
+                    <xs:attribute type="xs:string" name="reportDate" use="optional"/>
+                    <xs:attribute type="xs:string" name="principalAdjustFactor" use="optional"/>
+                    <xs:attribute type="xs:string" name="dateTime" use="optional"/>
+                    <xs:attribute type="xs:string" name="tradeDate" use="optional"/>
+                    <xs:attribute type="xs:string" name="settleDateTarget" use="optional"/>
+                    <xs:attribute type="xs:string" name="transactionType" use="optional"/>
+                    <xs:attribute type="xs:string" name="exchange" use="optional"/>
+                    <xs:attribute type="xs:int" name="quantity" use="optional"/>
+                    <xs:attribute type="xs:float" name="tradePrice" use="optional"/>
+                    <xs:attribute type="xs:string" name="tradeMoney" use="optional"/>
+                    <xs:attribute type="xs:string" name="proceeds" use="optional"/>
+                    <xs:attribute type="xs:string" name="taxes" use="optional"/>
+                    <xs:attribute type="xs:string" name="ibCommission" use="optional"/>
+                    <xs:attribute type="xs:string" name="ibCommissionCurrency" use="optional"/>
+                    <xs:attribute type="xs:string" name="netCash" use="optional"/>
+                    <xs:attribute type="xs:string" name="closePrice" use="optional"/>
+                    <xs:attribute type="xs:string" name="openCloseIndicator" use="optional"/>
+                    <xs:attribute type="xs:string" name="notes" use="optional"/>
+                    <xs:attribute type="xs:float" name="cost" use="optional"/>
+                    <xs:attribute type="xs:float" name="fifoPnlRealized" use="optional"/>
+                    <xs:attribute type="xs:float" name="fxPnl" use="optional"/>
+                    <xs:attribute type="xs:string" name="mtmPnl" use="optional"/>
+                    <xs:attribute type="xs:string" name="origTradePrice" use="optional"/>
+                    <xs:attribute type="xs:string" name="origTradeDate" use="optional"/>
+                    <xs:attribute type="xs:string" name="origTradeID" use="optional"/>
+                    <xs:attribute type="xs:string" name="origOrderID" use="optional"/>
+                    <xs:attribute type="xs:string" name="clearingFirmID" use="optional"/>
+                    <xs:attribute type="xs:long" name="transactionID" use="optional"/>
+                    <xs:attribute type="xs:string" name="buySell" use="optional"/>
+                    <xs:attribute type="xs:string" name="ibOrderID" use="optional"/>
+                    <xs:attribute type="xs:string" name="ibExecID" use="optional"/>
+                    <xs:attribute type="xs:string" name="brokerageOrderID" use="optional"/>
+                    <xs:attribute type="xs:string" name="orderReference" use="optional"/>
+                    <xs:attribute type="xs:string" name="volatilityOrderLink" use="optional"/>
+                    <xs:attribute type="xs:string" name="exchOrderId" use="optional"/>
+                    <xs:attribute type="xs:string" name="extExecID" use="optional"/>
+                    <xs:attribute type="xs:string" name="orderTime" use="optional"/>
+                    <xs:attribute type="xs:string" name="openDateTime" use="optional"/>
+                    <xs:attribute type="xs:string" name="holdingPeriodDateTime" use="optional"/>
+                    <xs:attribute type="xs:string" name="whenRealized" use="optional"/>
+                    <xs:attribute type="xs:string" name="whenReopened" use="optional"/>
+                    <xs:attribute type="xs:string" name="levelOfDetail" use="optional"/>
+                    <xs:attribute type="xs:string" name="changeInPrice" use="optional"/>
+                    <xs:attribute type="xs:string" name="changeInQuantity" use="optional"/>
+                    <xs:attribute type="xs:string" name="orderType" use="optional"/>
+                    <xs:attribute type="xs:string" name="traderID" use="optional"/>
+                    <xs:attribute type="xs:string" name="isAPIOrder" use="optional"/>
+                    <xs:attribute type="xs:string" name="accruedInt" use="optional"/>
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="ChangeInDividendAccrual">
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base="xs:string">
+                    <xs:attribute type="xs:string" name="accountId" use="optional"/>
+                    <xs:attribute type="xs:string" name="acctAlias" use="optional"/>
+                    <xs:attribute type="xs:string" name="model" use="optional"/>
+                    <xs:attribute type="xs:string" name="currency" use="optional"/>
+                    <xs:attribute type="xs:byte" name="fxRateToBase" use="optional"/>
+                    <xs:attribute type="xs:string" name="assetCategory" use="optional"/>
+                    <xs:attribute type="xs:string" name="symbol" use="optional"/>
+                    <xs:attribute type="xs:string" name="description" use="optional"/>
+                    <xs:attribute type="xs:int" name="conid" use="optional"/>
+                    <xs:attribute type="xs:string" name="securityID" use="optional"/>
+                    <xs:attribute type="xs:string" name="securityIDType" use="optional"/>
+                    <xs:attribute type="xs:string" name="cusip" use="optional"/>
+                    <xs:attribute type="xs:string" name="isin" use="optional"/>
+                    <xs:attribute type="xs:string" name="listingExchange" use="optional"/>
+                    <xs:attribute type="xs:string" name="underlyingConid" use="optional"/>
+                    <xs:attribute type="xs:string" name="underlyingSymbol" use="optional"/>
+                    <xs:attribute type="xs:string" name="underlyingSecurityID" use="optional"/>
+                    <xs:attribute type="xs:string" name="underlyingListingExchange" use="optional"/>
+                    <xs:attribute type="xs:string" name="issuer" use="optional"/>
+                    <xs:attribute type="xs:byte" name="multiplier" use="optional"/>
+                    <xs:attribute type="xs:string" name="strike" use="optional"/>
+                    <xs:attribute type="xs:string" name="expiry" use="optional"/>
+                    <xs:attribute type="xs:string" name="putCall" use="optional"/>
+                    <xs:attribute type="xs:string" name="principalAdjustFactor" use="optional"/>
+                    <xs:attribute type="xs:string" name="reportDate" use="optional"/>
+                    <xs:attribute type="xs:string" name="date" use="optional"/>
+                    <xs:attribute type="xs:string" name="exDate" use="optional"/>
+                    <xs:attribute type="xs:string" name="payDate" use="optional"/>
+                    <xs:attribute type="xs:int" name="quantity" use="optional"/>
+                    <xs:attribute type="xs:float" name="tax" use="optional"/>
+                    <xs:attribute type="xs:float" name="fee" use="optional"/>
+                    <xs:attribute type="xs:float" name="grossRate" use="optional"/>
+                    <xs:attribute type="xs:float" name="grossAmount" use="optional"/>
+                    <xs:attribute type="xs:float" name="netAmount" use="optional"/>
+                    <xs:attribute type="xs:string" name="code" use="optional"/>
+                    <xs:attribute type="xs:string" name="fromAcct" use="optional"/>
+                    <xs:attribute type="xs:string" name="toAcct" use="optional"/>
+                    <xs:attribute type="xs:string" name="levelOfDetail" use="optional"/>
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Trades">
+        <xs:complexType>
+            <xs:choice maxOccurs="unbounded" minOccurs="0">
+                <xs:element ref="Trade" maxOccurs="unbounded" minOccurs="0"/>
+                <xs:element ref="Lot"/>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="ChangeInDividendAccruals">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="ChangeInDividendAccrual" maxOccurs="unbounded" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="FlexStatement">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Trades"/>
+                <xs:element ref="ChangeInDividendAccruals"/>
+            </xs:sequence>
+            <xs:attribute type="xs:string" name="accountId"/>
+            <xs:attribute type="xs:string" name="fromDate"/>
+            <xs:attribute type="xs:string" name="toDate"/>
+            <xs:attribute type="xs:string" name="period"/>
+            <xs:attribute type="xs:string" name="whenGenerated"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="FlexStatements">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="FlexStatement"/>
+            </xs:sequence>
+            <xs:attribute type="xs:int" name="count"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="FlexQueryResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="FlexStatements"/>
+            </xs:sequence>
+            <xs:attribute type="xs:string" name="queryName"/>
+            <xs:attribute type="xs:string" name="type"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

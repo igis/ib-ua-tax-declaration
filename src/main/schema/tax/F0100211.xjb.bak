@@ -1,0 +1,38 @@
+<jxb:bindings version="1.0"
+              xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+              xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+              xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <jxb:bindings schemaLocation="F0100211.xsd" node="//xs:schema">
+        <jxb:schemaBindings>
+            <jxb:package name="ua.gov.tax.F0100211"/>
+        </jxb:schemaBindings>
+
+        <jxb:bindings scd="~DGdecimal2">
+            <xjc:javaType adapter="net.igis.ib.taxer.xml.Decimal2ColumnAdapter" name="java.math.BigDecimal" />
+        </jxb:bindings>
+
+<!--
+        <jxb:bindings node="//xs:element[@name='R010G3']">
+            <xjc:javaType adapter="net.igis.ib.taxer.xml.Decimal2ColumnAdapter" name="java.math.BigDecimal" />
+        </jxb:bindings>
+        <jxb:bindings node="//xs:element[@name='R010G6']">
+            <xjc:javaType adapter="net.igis.ib.taxer.xml.Decimal2ColumnAdapter" name="java.math.BigDecimal" />
+        </jxb:bindings>
+        <jxb:bindings node="//xs:element[@name='R010G7']">
+            <xjc:javaType adapter="net.igis.ib.taxer.xml.Decimal2ColumnAdapter" name="java.math.BigDecimal" />
+        </jxb:bindings>
+        <jxb:bindings node="//xs:element[@name='R0105G3']">
+            <xjc:javaType adapter="net.igis.ib.taxer.xml.Decimal2ColumnAdapter" name="java.math.BigDecimal" />
+        </jxb:bindings>
+        <jxb:bindings node="//xs:element[@name='R0105G6']">
+            <xjc:javaType adapter="net.igis.ib.taxer.xml.Decimal2ColumnAdapter" name="java.math.BigDecimal" />
+        </jxb:bindings>
+        <jxb:bindings node="//xs:element[@name='R0105G7']">
+            <xjc:javaType adapter="net.igis.ib.taxer.xml.Decimal2ColumnAdapter" name="java.math.BigDecimal" />
+        </jxb:bindings>
+-->
+
+    </jxb:bindings>
+
+</jxb:bindings>
