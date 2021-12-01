@@ -27,7 +27,7 @@ public class TradeReport {
         @NonNull
         String symbol;
         String description;
-        int quantity;
+        double quantity;
         double buyCost;
         double sellCost;
         double profitLoss;

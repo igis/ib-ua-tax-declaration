@@ -54,6 +54,7 @@ public class DividendReportBuilder {
         Map<String, List<ChangeInDividendAccrual>> allPostings = flexStatement
                 .getChangeInDividendAccruals().getChangeInDividendAccrual().stream()
                 .filter(x -> x.getCode().equals("Po"))
+                .filter(x -> !x.getPayDate().isEmpty())
                 .filter(x -> Integer.parseInt(x.getPayDate()) <= Integer.parseInt(reportToDate))
                 .collect(Collectors.groupingBy(ChangeInDividendAccrual::getSymbol));
 

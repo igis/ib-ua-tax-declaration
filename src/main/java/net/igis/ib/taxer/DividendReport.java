@@ -22,7 +22,7 @@ public class DividendReport {
         @NonNull
         String symbol;
         String description;
-        int quantity;
+        double quantity;
         double amount;
         double taxPdfo;
         double taxVz;

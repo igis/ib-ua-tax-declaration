@@ -34,7 +34,7 @@
                     <xs:attribute type="xs:int" name="settleDateTarget" use="optional"/>
                     <xs:attribute type="xs:string" name="transactionType" use="optional"/>
                     <xs:attribute type="xs:string" name="exchange" use="optional"/>
-                    <xs:attribute type="xs:int" name="quantity" use="optional"/>
+                    <xs:attribute type="xs:float" name="quantity" use="optional"/>
                     <xs:attribute type="xs:float" name="tradePrice" use="optional"/>
                     <xs:attribute type="xs:float" name="tradeMoney" use="optional"/>
                     <xs:attribute type="xs:float" name="proceeds" use="optional"/>
@@ -114,7 +114,7 @@
                     <xs:attribute type="xs:string" name="settleDateTarget" use="optional"/>
                     <xs:attribute type="xs:string" name="transactionType" use="optional"/>
                     <xs:attribute type="xs:string" name="exchange" use="optional"/>
-                    <xs:attribute type="xs:int" name="quantity" use="optional"/>
+                    <xs:attribute type="xs:float" name="quantity" use="optional"/>
                     <xs:attribute type="xs:float" name="tradePrice" use="optional"/>
                     <xs:attribute type="xs:string" name="tradeMoney" use="optional"/>
                     <xs:attribute type="xs:string" name="proceeds" use="optional"/>
@@ -167,7 +167,7 @@
                     <xs:attribute type="xs:string" name="acctAlias" use="optional"/>
                     <xs:attribute type="xs:string" name="model" use="optional"/>
                     <xs:attribute type="xs:string" name="currency" use="optional"/>
-                    <xs:attribute type="xs:byte" name="fxRateToBase" use="optional"/>
+                    <xs:attribute type="xs:float" name="fxRateToBase" use="optional"/>
                     <xs:attribute type="xs:string" name="assetCategory" use="optional"/>
                     <xs:attribute type="xs:string" name="symbol" use="optional"/>
                     <xs:attribute type="xs:string" name="description" use="optional"/>
@@ -182,7 +182,7 @@
                     <xs:attribute type="xs:string" name="underlyingSecurityID" use="optional"/>
                     <xs:attribute type="xs:string" name="underlyingListingExchange" use="optional"/>
                     <xs:attribute type="xs:string" name="issuer" use="optional"/>
-                    <xs:attribute type="xs:byte" name="multiplier" use="optional"/>
+                    <xs:attribute type="xs:int" name="multiplier" use="optional"/>
                     <xs:attribute type="xs:string" name="strike" use="optional"/>
                     <xs:attribute type="xs:string" name="expiry" use="optional"/>
                     <xs:attribute type="xs:string" name="putCall" use="optional"/>
@@ -191,7 +191,7 @@
                     <xs:attribute type="xs:string" name="date" use="optional"/>
                     <xs:attribute type="xs:string" name="exDate" use="optional"/>
                     <xs:attribute type="xs:string" name="payDate" use="optional"/>
-                    <xs:attribute type="xs:int" name="quantity" use="optional"/>
+                    <xs:attribute type="xs:float" name="quantity" use="optional"/>
                     <xs:attribute type="xs:float" name="tax" use="optional"/>
                     <xs:attribute type="xs:float" name="fee" use="optional"/>
                     <xs:attribute type="xs:float" name="grossRate" use="optional"/>

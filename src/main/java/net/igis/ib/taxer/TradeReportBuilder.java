@@ -5,11 +5,7 @@ import com.ib.flex.Lot;
 import com.ib.flex.Trade;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class TradeReportBuilder {
 
@@ -40,7 +36,7 @@ public class TradeReportBuilder {
         double totalProfit = totalProfitLoss > 0.0 ? totalProfitLoss : 0;
         double totalLoss = totalProfitLoss < 0.0 ? Math.abs(totalProfitLoss) : 0;
 
-        System.out.println("=================");
+        System.out.println("=========================================================================");
         System.out.println(String.format("Total: %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f",
                 totalBuyCost, totalSellCost, totalProfitLoss, totalProfit, totalLoss, totalTaxPdfo, totalTaxVz));
 
@@ -62,92 +58,115 @@ public class TradeReportBuilder {
     public static List<TradeReport.Item> buildTradeReportItemList(FlexStatement flexStatement)
             throws IOException, InterruptedException {
 
-        Map<String, List<Trade>> allTrades = flexStatement.getTrades().getTradeOrLot().stream()
-                .filter(x -> x instanceof Trade)
-                .map(Trade.class::cast)
-                .filter(x -> x.getOpenCloseIndicator().equals("C"))
-                .collect(Collectors.groupingBy(Trade::getSymbol));
+        class TradeWithLots {
+            Trade trade;
+            List<Lot> lots = new ArrayList<>();
 
-        Map<String, List<Lot>> allLots = flexStatement.getTrades().getTradeOrLot().stream()
-                .filter(x -> x instanceof Lot)
-                .map(Lot.class::cast)
-                .filter(x -> x.getOpenCloseIndicator().equals("C"))
-                .collect(Collectors.groupingBy(Lot::getSymbol));
+            public TradeWithLots(Trade trade) {
+                this.trade = trade;
+            }
+        }
 
-        List<TradeReport.Item> items = new ArrayList<>(allTrades.size());
-
-        for (String symbol : allTrades.keySet()) {
-            System.out.println("=================");
-            System.out.println(String.format("%s", symbol));
-
-            List<Trade> trades = allTrades.get(symbol);
-
-            String description = trades.get(0).getDescription();
-            double buyQty = 0;
-            double buyCost = 0;
-            double sellQty = 0;
-            double sellCost = 0;
-
-            for (Trade trade : allTrades.get(symbol)) {
-
-                // Find lots for this trade using the 'dateTime' attribute
-                List<Lot> lots = allLots.get(symbol).stream()
-                        .filter(x -> x.getDateTime().equals(trade.getDateTime()))
-                        .collect(Collectors.toList());
-
-                for (Lot lot : lots) {
-                    String openDateTime = lot.getOpenDateTime();
-                    String openDate = openDateTime.split(";")[0];
-                    double cost = lot.getCost();
-
-                    double exchangeRate = ExchangeRates.getExchangeRate(openDate);
-                    double costUah = cost * exchangeRate;
-
-                    System.out.println(String.format("Lot: %s, %s, %s, %s",
-                            lot.getQuantity(), costUah, lot.getOpenDateTime(), exchangeRate));
-
-                    buyQty += lot.getQuantity();
-                    buyCost += costUah;
+        Map<String, List<TradeWithLots>> tradesWithLots = new HashMap<>();
+        TradeWithLots currentTradeWithLots = null;
+        for (Object tradeOrLot : flexStatement.getTrades().getTradeOrLot()) {
+            if (tradeOrLot instanceof Trade) {
+                Trade trade = (Trade) tradeOrLot;
+                if (trade.getOpenCloseIndicator().equals("C")) {
+                    currentTradeWithLots = new TradeWithLots(trade);
+                    List<TradeWithLots> tradesWithLotsForSymbol = tradesWithLots.get(trade.getSymbol());
+                    if (tradesWithLotsForSymbol == null) {
+                        tradesWithLotsForSymbol = new ArrayList<>();
+                        tradesWithLots.put(trade.getSymbol(), tradesWithLotsForSymbol);
+                    }
+                    tradesWithLotsForSymbol.add(currentTradeWithLots);
                 }
+            } else if (tradeOrLot instanceof Lot) {
+                Lot lot = (Lot) tradeOrLot;
+                if (lot.getOpenCloseIndicator().equals("C")) {
+                    currentTradeWithLots.lots.add(lot);
+                }
+            }
+        }
+
+        List<TradeReport.Item> items = new ArrayList<>(tradesWithLots.size());
+
+        for (Map.Entry<String, List<TradeWithLots>> trades : tradesWithLots.entrySet()) {
+            String symbol = trades.getKey();
+            List<TradeWithLots> tradesWithLotsForSymbol = trades.getValue();
+            String description = tradesWithLotsForSymbol.get(0).trade.getDescription();
+
+            System.out.println("=========================================================================");
+            System.out.println(String.format("%s (%s)", symbol, description));
+
+            double totalBuyQty = 0;
+            double totalBuyCost = 0;
+            double totalSellQty = 0;
+            double totalSellCost = 0;
+
+            for (TradeWithLots tradeWithLots : tradesWithLotsForSymbol) {
+                System.out.println("-------------------------------------------------------------------------");
+
+                Trade trade = tradeWithLots.trade;
 
                 String tradeDateTime = trade.getDateTime();
                 String tradeDate = tradeDateTime.split(";")[0];
-                double cost = trade.getNetCash();
+                double sellCost = trade.getNetCash();
 
-                double exchangeRate = ExchangeRates.getExchangeRate(tradeDate);
-                double costUah = cost * exchangeRate;
+                double sellExchangeRate = ExchangeRates.getExchangeRate(tradeDate);
+                double sellCostUah = sellCost * sellExchangeRate;
 
                 System.out.println(String.format("Trade: %s, %s, %s, %s",
-                        trade.getQuantity(), costUah, trade.getDateTime(), exchangeRate));
+                        trade.getQuantity(), sellCostUah, trade.getDateTime(), sellExchangeRate));
 
-                sellQty += Math.abs(trade.getQuantity());
-                sellCost += costUah;
+                totalSellQty += Math.abs(trade.getQuantity());
+                totalSellCost += sellCostUah;
+
+                for (Lot lot : tradeWithLots.lots) {
+                    String openDateTime = lot.getOpenDateTime();
+                    String openDate = openDateTime.split(";")[0];
+                    double buyCost = lot.getCost();
+
+                    double buyExchangeRate = ExchangeRates.getExchangeRate(openDate);
+                    double buyCostUah = buyCost * buyExchangeRate;
+
+                    System.out.println(String.format("Lot: %s, %s, %s, %s",
+                            lot.getQuantity(), buyCostUah, lot.getOpenDateTime(), buyExchangeRate));
+
+                    totalBuyQty += lot.getQuantity();
+                    totalBuyCost += buyCostUah;
+                }
             }
 
-            if (sellQty != buyQty) {
+            System.out.println("-------------------------------------------------------------------------");
+
+            if (totalSellQty != totalBuyQty) {
                 throw new RuntimeException(
-                        String.format("Buy quantity and sell quantity for %s doesn't match", symbol));
+                        String.format("Total buy quantity and sell quantity for %s don't match: buy %.2f, sell %.2f",
+                                symbol, totalBuyQty, totalSellQty));
             }
 
-            double profitLoss = sellCost - buyCost;
+            double profitLoss = totalSellCost - totalBuyCost;
 
             double taxPdfo = profitLoss > 0.0 ? (profitLoss / 100.0) * 18.0 : 0.0;
             double taxVz = profitLoss > 0.0 ? (profitLoss / 100.0) * 1.5 : 0.0;
 
             System.out.println(String.format("Total: %s, %s, %.2f, %.2f, %.2f, %.2f",
-                    (int) buyQty, buyCost, sellCost, profitLoss, taxPdfo, taxVz));
+                    totalBuyQty, totalBuyCost, totalSellCost, profitLoss, taxPdfo, taxVz));
 
             TradeReport.Item item = TradeReport.Item.builder()
                     .symbol(symbol)
                     .description(description)
-                    .quantity((int) buyQty)
-                    .buyCost(buyCost)
-                    .sellCost(sellCost)
+                    .quantity(totalBuyQty)
+                    .buyCost(totalBuyCost)
+                    .sellCost(totalSellCost)
                     .profitLoss(profitLoss)
                     .taxPdfo(taxPdfo)
                     .taxVz(taxVz)
                     .build();
             items.add(item);
+
+            System.out.println();
         }
 
         return items;

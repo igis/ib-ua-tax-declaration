@@ -67,7 +67,12 @@ public class TradeTaxFormBuilder {
 
             StrColumn g3s = objectFactory.createStrColumn();
             g3s.setROWNUM(rowNum);
-            g3s.setValue(String.format("%s %dшт.", trade.getSymbol(), trade.getQuantity()));
+            if ((trade.getQuantity() % 1) == 0) {
+                g3s.setValue(String.format("%s %.0fшт.", trade.getSymbol(), trade.getQuantity()));
+            } else {
+                // Quantity is fractional
+                g3s.setValue(String.format("%s %.1fшт.", trade.getSymbol(), trade.getQuantity()));
+            }
 
             Decimal2Column g4 = objectFactory.createDecimal2Column();
             g4.setROWNUM(rowNum);
