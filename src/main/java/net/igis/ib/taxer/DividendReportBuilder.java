@@ -32,28 +32,27 @@ public class DividendReportBuilder {
             }
         }
 
-        List<DividendReport.Item> allItems = new ArrayList<>();
-
         double totalAmount = 0;
+        double totalAmountUah = 0;
 
-        List<DividendReport.Item> items = buildDividendReportItemList(allPayouts, reportToDateLatest);
+        List<DividendReport.Item> allItems = buildDividendReportItemList(allPayouts, reportToDateLatest);
 
-        for (DividendReport.Item item : items) {
-            totalAmount += item.getAmount();
-
-            allItems.add(item);
+        for (DividendReport.Item item : allItems) {
+            totalAmount += item.getAmountUsd();
+            totalAmountUah += item.getAmount();
         }
 
-        double totalTaxPdfo = totalAmount > 0.0 ? (totalAmount / 100.0) * 18.0 : 0.0;
-        double totalTaxVz = totalAmount > 0.0 ? (totalAmount / 100.0) * 1.5 : 0.0;
+        double totalTaxPdfo = totalAmountUah > 0.0 ? (totalAmountUah / 100.0) * 18.0 : 0.0;
+        double totalTaxVz = totalAmountUah > 0.0 ? (totalAmountUah / 100.0) * 1.5 : 0.0;
 
         System.out.println("=========================================================================");
-        System.out.println(String.format("Total: %.2f, %.2f, %.2f",
-                totalAmount, totalTaxPdfo, totalTaxVz));
+        System.out.println(String.format("Total: %.2f (%.2f), %.2f, %.2f",
+                totalAmountUah, totalAmount, totalTaxPdfo, totalTaxVz));
 
         DividendReport report = DividendReport.builder()
                 .items(allItems)
-                .totalAmount(totalAmount)
+                .totalAmount(totalAmountUah)
+                .totalAmountUsd(totalAmount)
                 .totalTaxPdfo(totalTaxPdfo)
                 .totalTaxVz(totalTaxVz)
                 .build();
@@ -111,10 +110,11 @@ public class DividendReportBuilder {
                         .description(payout.getDescription())
                         .quantity(payout.getQuantity())
                         .amount(netAmountUah)
+                        .amountUsd(netAmount)
                         .build();
 
-                System.out.println(String.format("Dividend: %s, %s, %.2f, %s, %s",
-                        item.getSymbol(), payout.getQuantity(), netAmountUah, payDate, exchangeRate));
+                System.out.println(String.format("Dividend: %s, %s, %.2f (%.2f), %s, %s",
+                        item.getSymbol(), payout.getQuantity(), netAmountUah, netAmount, payDate, exchangeRate));
 
                 items.add(item);
             }

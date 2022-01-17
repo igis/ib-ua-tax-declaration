@@ -12,42 +12,60 @@ public class TradeReportBuilder {
     public static TradeReport build(Collection<FlexStatement> flexStatements, double previousPeriodLoss)
             throws IOException, InterruptedException {
 
-        double totalBuyCost = 0;
-        double totalSellCost = 0;
-
-        List<TradeReport.Item> allItems = new ArrayList<>();
+        Map<String, List<TradeWithLots>> allTradesWithLots = new HashMap<>();
 
         for (FlexStatement flexStatement : flexStatements) {
-            List<TradeReport.Item> items = buildTradeReportItemList(flexStatement);
-
-            for (TradeReport.Item item : items) {
-                totalBuyCost += item.getBuyCost();
-                totalSellCost += item.getSellCost();
-
-                allItems.add(item);
+            Map<String, List<TradeWithLots>> tradesWithLots = collectTradesWithLots(flexStatement);
+            for (String symbol : tradesWithLots.keySet()) {
+                List<TradeWithLots> tradesWithLotsForSymbol = allTradesWithLots.get(symbol);
+                if (tradesWithLotsForSymbol == null) {
+                    tradesWithLotsForSymbol = new ArrayList<>();
+                    allTradesWithLots.put(symbol, tradesWithLotsForSymbol);
+                }
+                tradesWithLotsForSymbol.addAll(tradesWithLots.get(symbol));
             }
         }
 
-        double itemTotalProfitLoss = totalSellCost - totalBuyCost;
-        double totalProfitLoss = itemTotalProfitLoss - previousPeriodLoss;
-        double totalTaxPdfo = totalProfitLoss > 0.0 ? (totalProfitLoss / 100.0) * 18.0 : 0.0;
-        double totalTaxVz = totalProfitLoss > 0.0 ? (totalProfitLoss / 100.0) * 1.5 : 0.0;
+        double totalBuyCost = 0;
+        double totalBuyCostUah = 0;
+        double totalSellCost = 0;
+        double totalSellCostUah = 0;
 
-        double totalProfit = totalProfitLoss > 0.0 ? totalProfitLoss : 0;
-        double totalLoss = totalProfitLoss < 0.0 ? Math.abs(totalProfitLoss) : 0;
+        List<TradeReport.Item> allItems = buildTradeReportItemList(allTradesWithLots);
+
+        for (TradeReport.Item item : allItems) {
+            totalBuyCost += item.getBuyCostUsd();
+            totalBuyCostUah += item.getBuyCost();
+
+            totalSellCost += item.getSellCostUsd();
+            totalSellCostUah += item.getSellCost();
+        }
+
+        double itemTotalProfitLoss = totalSellCost - totalBuyCost;
+        double itemTotalProfitLossUah = totalSellCostUah - totalBuyCostUah;
+        double totalProfitLossUah = itemTotalProfitLossUah - previousPeriodLoss;
+        double totalTaxPdfo = totalProfitLossUah > 0.0 ? (totalProfitLossUah / 100.0) * 18.0 : 0.0;
+        double totalTaxVz = totalProfitLossUah > 0.0 ? (totalProfitLossUah / 100.0) * 1.5 : 0.0;
+
+        double totalProfitUah = totalProfitLossUah > 0.0 ? totalProfitLossUah : 0;
+        double totalLossUah = totalProfitLossUah < 0.0 ? Math.abs(totalProfitLossUah) : 0;
 
         System.out.println("=========================================================================");
-        System.out.println(String.format("Total: %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f",
-                totalBuyCost, totalSellCost, totalProfitLoss, totalProfit, totalLoss, totalTaxPdfo, totalTaxVz));
+        System.out.println(String.format("Total: %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f",
+                totalBuyCostUah, totalSellCostUah, itemTotalProfitLoss, totalProfitLossUah,
+                totalProfitUah, totalLossUah, totalTaxPdfo, totalTaxVz));
 
         TradeReport tradeReport = TradeReport.builder()
                 .items(allItems)
-                .totalBuyCost(totalBuyCost)
-                .totalSellCost(totalSellCost)
-                .itemTotalProfitLoss(itemTotalProfitLoss)
-                .totalProfitLoss(totalProfitLoss)
-                .totalProfit(totalProfit)
-                .totalLoss(totalLoss)
+                .totalBuyCost(totalBuyCostUah)
+                .totalBuyCostUsd(totalBuyCost)
+                .totalSellCost(totalSellCostUah)
+                .totalSellCostUsd(totalSellCost)
+                .itemTotalProfitLoss(itemTotalProfitLossUah)
+                .itemTotalProfitLossUsd(itemTotalProfitLoss)
+                .totalProfitLoss(totalProfitLossUah)
+                .totalProfit(totalProfitUah)
+                .totalLoss(totalLossUah)
                 .totalTaxPdfo(totalTaxPdfo)
                 .totalTaxVz(totalTaxVz)
                 .build();
@@ -55,17 +73,7 @@ public class TradeReportBuilder {
         return tradeReport;
     }
 
-    public static List<TradeReport.Item> buildTradeReportItemList(FlexStatement flexStatement)
-            throws IOException, InterruptedException {
-
-        class TradeWithLots {
-            Trade trade;
-            List<Lot> lots = new ArrayList<>();
-
-            public TradeWithLots(Trade trade) {
-                this.trade = trade;
-            }
-        }
+    private static Map<String, List<TradeWithLots>> collectTradesWithLots(FlexStatement flexStatement) {
 
         Map<String, List<TradeWithLots>> tradesWithLots = new HashMap<>();
         TradeWithLots currentTradeWithLots = null;
@@ -89,6 +97,12 @@ public class TradeReportBuilder {
             }
         }
 
+        return tradesWithLots;
+    }
+
+    private static List<TradeReport.Item> buildTradeReportItemList(Map<String, List<TradeWithLots>> tradesWithLots)
+            throws IOException, InterruptedException {
+
         List<TradeReport.Item> items = new ArrayList<>(tradesWithLots.size());
 
         for (Map.Entry<String, List<TradeWithLots>> trades : tradesWithLots.entrySet()) {
@@ -101,8 +115,10 @@ public class TradeReportBuilder {
 
             double totalBuyQty = 0;
             double totalBuyCost = 0;
+            double totalBuyCostUah = 0;
             double totalSellQty = 0;
             double totalSellCost = 0;
+            double totalSellCostUah = 0;
 
             for (TradeWithLots tradeWithLots : tradesWithLotsForSymbol) {
                 System.out.println("-------------------------------------------------------------------------");
@@ -116,11 +132,12 @@ public class TradeReportBuilder {
                 double sellExchangeRate = ExchangeRates.getExchangeRate(tradeDate);
                 double sellCostUah = sellCost * sellExchangeRate;
 
-                System.out.println(String.format("Trade: %s, %s, %s, %s",
-                        trade.getQuantity(), sellCostUah, trade.getDateTime(), sellExchangeRate));
+                System.out.println(String.format("Trade: %s, %.2f (%.2f), %s, %s",
+                        trade.getQuantity(), sellCostUah, sellCost, trade.getDateTime(), sellExchangeRate));
 
                 totalSellQty += Math.abs(trade.getQuantity());
-                totalSellCost += sellCostUah;
+                totalSellCost += sellCost;
+                totalSellCostUah += sellCostUah;
 
                 for (Lot lot : tradeWithLots.lots) {
                     String openDateTime = lot.getOpenDateTime();
@@ -130,11 +147,12 @@ public class TradeReportBuilder {
                     double buyExchangeRate = ExchangeRates.getExchangeRate(openDate);
                     double buyCostUah = buyCost * buyExchangeRate;
 
-                    System.out.println(String.format("Lot: %s, %s, %s, %s",
-                            lot.getQuantity(), buyCostUah, lot.getOpenDateTime(), buyExchangeRate));
+                    System.out.println(String.format("Lot: %s, %.2f (%.2f), %s, %s",
+                            lot.getQuantity(), buyCostUah, buyCost, lot.getOpenDateTime(), buyExchangeRate));
 
                     totalBuyQty += lot.getQuantity();
-                    totalBuyCost += buyCostUah;
+                    totalBuyCost += buyCost;
+                    totalBuyCostUah += buyCostUah;
                 }
             }
 
@@ -147,20 +165,24 @@ public class TradeReportBuilder {
             }
 
             double profitLoss = totalSellCost - totalBuyCost;
+            double profitLossUah = totalSellCostUah - totalBuyCostUah;
 
-            double taxPdfo = profitLoss > 0.0 ? (profitLoss / 100.0) * 18.0 : 0.0;
-            double taxVz = profitLoss > 0.0 ? (profitLoss / 100.0) * 1.5 : 0.0;
+            double taxPdfo = profitLossUah > 0.0 ? (profitLossUah / 100.0) * 18.0 : 0.0;
+            double taxVz = profitLossUah > 0.0 ? (profitLossUah / 100.0) * 1.5 : 0.0;
 
-            System.out.println(String.format("Total: %s, %s, %.2f, %.2f, %.2f, %.2f",
-                    totalBuyQty, totalBuyCost, totalSellCost, profitLoss, taxPdfo, taxVz));
+            System.out.println(String.format("Total: %s, %.2f, %.2f, %.2f (%.2f), %.2f, %.2f",
+                    totalBuyQty, totalBuyCostUah, totalSellCostUah, profitLossUah, profitLoss, taxPdfo, taxVz));
 
             TradeReport.Item item = TradeReport.Item.builder()
                     .symbol(symbol)
                     .description(description)
                     .quantity(totalBuyQty)
-                    .buyCost(totalBuyCost)
-                    .sellCost(totalSellCost)
-                    .profitLoss(profitLoss)
+                    .buyCost(totalBuyCostUah)
+                    .buyCostUsd(totalBuyCost)
+                    .sellCost(totalSellCostUah)
+                    .sellCostUsd(totalSellCost)
+                    .profitLoss(profitLossUah)
+                    .profitLossUsd(profitLoss)
                     .taxPdfo(taxPdfo)
                     .taxVz(taxVz)
                     .build();
@@ -170,6 +192,15 @@ public class TradeReportBuilder {
         }
 
         return items;
+    }
+
+    static class TradeWithLots {
+        Trade trade;
+        List<Lot> lots = new ArrayList<>();
+
+        public TradeWithLots(Trade trade) {
+            this.trade = trade;
+        }
     }
 
 }

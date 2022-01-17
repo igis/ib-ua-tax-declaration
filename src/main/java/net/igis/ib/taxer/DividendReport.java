@@ -13,6 +13,7 @@ public class DividendReport {
     @Singular
     List<Item> items;
     double totalAmount;
+    double totalAmountUsd;
     double totalTaxPdfo;
     double totalTaxVz;
 
@@ -24,6 +25,7 @@ public class DividendReport {
         String description;
         double quantity;
         double amount;
+        double amountUsd;
         double taxPdfo;
         double taxVz;
     }

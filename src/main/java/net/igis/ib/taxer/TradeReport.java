@@ -13,11 +13,17 @@ public class TradeReport {
     @Singular
     List<Item> items;
     double totalBuyCost;
+    double totalBuyCostUsd;
     double totalSellCost;
+    double totalSellCostUsd;
     double itemTotalProfitLoss;
+    double itemTotalProfitLossUsd;
     double totalProfitLoss;
+    double totalProfitLossUsd;
     double totalProfit;
+    double totalProfitUsd;
     double totalLoss;
+    double totalLossUsd;
     double totalTaxPdfo;
     double totalTaxVz;
 
@@ -29,8 +35,11 @@ public class TradeReport {
         String description;
         double quantity;
         double buyCost;
+        double buyCostUsd;
         double sellCost;
+        double sellCostUsd;
         double profitLoss;
+        double profitLossUsd;
         double taxPdfo;
         double taxVz;
     }
