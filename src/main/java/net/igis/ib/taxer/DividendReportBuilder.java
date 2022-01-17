@@ -4,10 +4,7 @@ import com.ib.flex.ChangeInDividendAccrual;
 import com.ib.flex.FlexStatement;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DividendReportBuilder {
@@ -15,24 +12,42 @@ public class DividendReportBuilder {
     public static DividendReport build(Collection<FlexStatement> flexStatements)
             throws IOException, InterruptedException {
 
+        String reportToDateLatest = null;
+        Map<String, List<ChangeInDividendAccrual>> allPayouts = new HashMap<>();
+
+        for (FlexStatement flexStatement : flexStatements) {
+            String reportToDate = flexStatement.getToDate();
+            if (reportToDateLatest == null || Integer.parseInt(reportToDate) > Integer.parseInt(reportToDateLatest)) {
+                reportToDateLatest = reportToDate;
+            }
+
+            Map<String, List<ChangeInDividendAccrual>> payouts = collectChanges(flexStatement);
+            for (String symbol : payouts.keySet()) {
+                List<ChangeInDividendAccrual> payoutsForSymbol = allPayouts.get(symbol);
+                if (payoutsForSymbol == null) {
+                    payoutsForSymbol = new ArrayList<>();
+                    allPayouts.put(symbol, payoutsForSymbol);
+                }
+                payoutsForSymbol.addAll(payouts.get(symbol));
+            }
+        }
+
         List<DividendReport.Item> allItems = new ArrayList<>();
 
         double totalAmount = 0;
 
-        for (FlexStatement flexStatement : flexStatements) {
-            List<DividendReport.Item> items = buildDividendReportItemList(flexStatement);
+        List<DividendReport.Item> items = buildDividendReportItemList(allPayouts, reportToDateLatest);
 
-            for (DividendReport.Item item : items) {
-                totalAmount += item.getAmount();
+        for (DividendReport.Item item : items) {
+            totalAmount += item.getAmount();
 
-                allItems.add(item);
-            }
+            allItems.add(item);
         }
 
         double totalTaxPdfo = totalAmount > 0.0 ? (totalAmount / 100.0) * 18.0 : 0.0;
         double totalTaxVz = totalAmount > 0.0 ? (totalAmount / 100.0) * 1.5 : 0.0;
 
-        System.out.println("=================");
+        System.out.println("=========================================================================");
         System.out.println(String.format("Total: %.2f, %.2f, %.2f",
                 totalAmount, totalTaxPdfo, totalTaxVz));
 
@@ -46,67 +61,65 @@ public class DividendReportBuilder {
         return report;
     }
 
-    public static List<DividendReport.Item> buildDividendReportItemList(FlexStatement flexStatement)
-            throws IOException, InterruptedException {
+    private static Map<String, List<ChangeInDividendAccrual>> collectChanges(
+            FlexStatement flexStatement) {
 
-        String reportToDate = flexStatement.getToDate();
-
-        Map<String, List<ChangeInDividendAccrual>> allPostings = flexStatement
+        Map<String, List<ChangeInDividendAccrual>> allPayouts = flexStatement
                 .getChangeInDividendAccruals().getChangeInDividendAccrual().stream()
-                .filter(x -> x.getCode().equals("Po"))
                 .filter(x -> !x.getPayDate().isEmpty())
-                .filter(x -> Integer.parseInt(x.getPayDate()) <= Integer.parseInt(reportToDate))
                 .collect(Collectors.groupingBy(ChangeInDividendAccrual::getSymbol));
 
-        List<DividendReport.Item> items = new ArrayList<>(allPostings.size());
+        return allPayouts;
+    }
 
-        for (String symbol : allPostings.keySet()) {
-            System.out.println("=================");
+    private static List<DividendReport.Item> buildDividendReportItemList(
+            Map<String, List<ChangeInDividendAccrual>> allPayouts, String reportToDate)
+            throws IOException, InterruptedException {
+
+        List<DividendReport.Item> items = new ArrayList<>(allPayouts.size());
+
+        for (String symbol : allPayouts.keySet()) {
+            System.out.println("=========================================================================");
             System.out.println(String.format("%s", symbol));
 
-            Map<String, List<ChangeInDividendAccrual>> postingsByPayDate = allPostings.get(symbol).stream()
+            Map<String, List<ChangeInDividendAccrual>> payoutsByPayDate = allPayouts.get(symbol).stream()
+                    .filter(x -> x.getCode().equals("Po"))
+                    .filter(x -> Integer.parseInt(x.getPayDate()) <= Integer.parseInt(reportToDate))
                     .collect(Collectors.groupingBy(ChangeInDividendAccrual::getPayDate));
 
-            for (String date : postingsByPayDate.keySet()) {
+            List<String> payDates = payoutsByPayDate.keySet().stream()
+                    .sorted(Comparator.comparingInt(Integer::parseInt))
+                    .collect(Collectors.toList());
+
+            for (String date : payDates) {
+                System.out.println("-------------------------------------------------------------------------");
                 System.out.println(String.format("Pay date: %s", date));
 
-                List<ChangeInDividendAccrual> postings = postingsByPayDate.get(date).stream()
-                        .sorted((a, b) -> Integer.compare(Integer.parseInt(a.getReportDate()), Integer.parseInt(b.getReportDate())))
+                List<ChangeInDividendAccrual> payouts = payoutsByPayDate.get(date).stream()
+                        .sorted(Comparator.comparingInt(a -> Integer.parseInt(a.getReportDate())))
                         .collect(Collectors.toList());
 
-/*
-            for (ChangeInDividendAccrual posting : postings) {
-                String reportDate = posting.getReportDate();
-                String payDate = posting.getPayDate();
-                double netAmount = posting.getNetAmount();
+                ChangeInDividendAccrual payout = payouts.get(payouts.size() - 1);
 
-                double exchangeRate = ExchangeRates.getExchangeRate(payDate);
-                double netAmountUah = netAmount * exchangeRate;
-
-                System.out.println(String.format("Dividend posting: %s, %.2f, %s, %s, %s",
-                        posting.getQuantity(), netAmountUah, reportDate, payDate, exchangeRate));
-            }
-*/
-
-                ChangeInDividendAccrual posting = postings.get(postings.size() - 1);
-
-                String payDate = posting.getPayDate();
-                double netAmount = posting.getNetAmount();
+                String payDate = payout.getPayDate();
+                double netAmount = Math.abs(payout.getNetAmount());
                 double exchangeRate = ExchangeRates.getExchangeRate(payDate);
                 double netAmountUah = netAmount * exchangeRate;
 
                 DividendReport.Item item = DividendReport.Item.builder()
                         .symbol(symbol)
-                        .description(posting.getDescription())
-                        .quantity(posting.getQuantity())
+                        .description(payout.getDescription())
+                        .quantity(payout.getQuantity())
                         .amount(netAmountUah)
                         .build();
 
                 System.out.println(String.format("Dividend: %s, %s, %.2f, %s, %s",
-                        item.getSymbol(), posting.getQuantity(), netAmountUah, payDate, exchangeRate));
+                        item.getSymbol(), payout.getQuantity(), netAmountUah, payDate, exchangeRate));
 
                 items.add(item);
             }
+
+            System.out.println();
         }
 
         return items;
