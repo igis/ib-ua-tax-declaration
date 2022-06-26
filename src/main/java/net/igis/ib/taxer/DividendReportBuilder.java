@@ -46,7 +46,7 @@ public class DividendReportBuilder {
         double totalTaxVz = totalAmountUah > 0.0 ? (totalAmountUah / 100.0) * 1.5 : 0.0;
 
         System.out.println("=========================================================================");
-        System.out.println(String.format("Total: %.2f (%.2f), %.2f, %.2f",
+        System.out.println(String.format("Total: %.2f (%.2f Net), %.2f, %.2f",
                 totalAmountUah, totalAmount, totalTaxPdfo, totalTaxVz));
 
         DividendReport report = DividendReport.builder()
@@ -101,20 +101,20 @@ public class DividendReportBuilder {
                 ChangeInDividendAccrual payout = payouts.get(payouts.size() - 1);
 
                 String payDate = payout.getPayDate();
-                double grossAmount = Math.abs(payout.getGrossAmount());
+                double amount = Math.abs(payout.getNetAmount());
                 double exchangeRate = ExchangeRates.getExchangeRate(payDate);
-                double grossAmountUah = grossAmount * exchangeRate;
+                double amountUah = amount * exchangeRate;
 
                 DividendReport.Item item = DividendReport.Item.builder()
                         .symbol(symbol)
                         .description(payout.getDescription())
                         .quantity(payout.getQuantity())
-                        .amount(grossAmountUah)
-                        .amountUsd(grossAmount)
+                        .amount(amountUah)
+                        .amountUsd(amount)
                         .build();
 
-                System.out.println(String.format("Dividend: %s, %s, %.2f (%.2f), %s, %s",
-                        item.getSymbol(), payout.getQuantity(), grossAmountUah, grossAmount, payDate, exchangeRate));
+                System.out.println(String.format("Dividend: %s, %s, %.2f (%.2f Net), %s, %s",
+                        item.getSymbol(), payout.getQuantity(), amountUah, amount, payDate, exchangeRate));
 
                 items.add(item);
             }
