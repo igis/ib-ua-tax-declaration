@@ -42,7 +42,7 @@ public class DividendReportBuilder {
             totalAmountUah += item.getAmount();
         }
 
-        double totalTaxPdfo = totalAmountUah > 0.0 ? (totalAmountUah / 100.0) * 18.0 : 0.0;
+        double totalTaxPdfo = totalAmountUah > 0.0 ? (totalAmountUah / 100.0) * 9.0 : 0.0;
         double totalTaxVz = totalAmountUah > 0.0 ? (totalAmountUah / 100.0) * 1.5 : 0.0;
 
         System.out.println("=========================================================================");
@@ -101,20 +101,20 @@ public class DividendReportBuilder {
                 ChangeInDividendAccrual payout = payouts.get(payouts.size() - 1);
 
                 String payDate = payout.getPayDate();
-                double netAmount = Math.abs(payout.getNetAmount());
+                double grossAmount = Math.abs(payout.getGrossAmount());
                 double exchangeRate = ExchangeRates.getExchangeRate(payDate);
-                double netAmountUah = netAmount * exchangeRate;
+                double grossAmountUah = grossAmount * exchangeRate;
 
                 DividendReport.Item item = DividendReport.Item.builder()
                         .symbol(symbol)
                         .description(payout.getDescription())
                         .quantity(payout.getQuantity())
-                        .amount(netAmountUah)
-                        .amountUsd(netAmount)
+                        .amount(grossAmountUah)
+                        .amountUsd(grossAmount)
                         .build();
 
                 System.out.println(String.format("Dividend: %s, %s, %.2f (%.2f), %s, %s",
-                        item.getSymbol(), payout.getQuantity(), netAmountUah, netAmount, payDate, exchangeRate));
+                        item.getSymbol(), payout.getQuantity(), grossAmountUah, grossAmount, payDate, exchangeRate));
 
                 items.add(item);
             }
